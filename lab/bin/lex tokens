@@ -1,0 +1,38 @@
+%{
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ID_LENGTH 30
+
+void print_identifier(char *yytext) {
+    if (strlen(yytext) > MAX_ID_LENGTH) {
+        printf("Identifier too long: %s (Truncated to %d chars)\n", yytext, MAX_ID_LENGTH);
+    } else {
+        printf("IDENTIFIER: %s\n", yytext);
+    }
+}
+%}
+
+%%
+
+[ \t\n]+          ;    // Ignore spaces, tabs, and new lines
+"//".*            ;    // Ignore single-line comments
+"/*"([^*]|\*+[^*/])*\*+"/"   ;  // Ignore multi-line comments
+
+[a-zA-Z_][a-zA-Z0-9_]*  { print_identifier(yytext); }  // Identifiers
+[0-9]+                  { printf("CONSTANT: %s\n", yytext); }  // Integer Constants
+[+\-*/=<>!&|%^]         { printf("OPERATOR: %s\n", yytext); }  // Operators
+
+.                       { printf("UNKNOWN: %s\n", yytext); }  // Anything else
+
+%%
+
+int yywrap() {
+    return 1;
+}
+
+int main() {
+    printf("Enter the input: ");
+    yylex();  // Call Flex's lexical analyzer
+    return 0;
+}
