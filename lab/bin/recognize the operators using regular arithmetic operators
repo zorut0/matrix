@@ -1,0 +1,38 @@
+%{
+#include<stdio.h>
+%}
+
+%%
+">=" { printf("Greater than or equal\n"); }
+">" { printf("Greater than\n"); }
+"<=" { printf("Less than or equal\n"); }
+"<" { printf("Less than\n"); }
+"==" { printf("Equal to\n"); }
+"=" { printf("Assignment\n"); }
+"!=" { printf("Not Equal\n"); }
+"!" { printf("Bit Not\n"); }
+"&&" { printf("Logical AND\n"); }
+"&" { printf("Bitwise AND\n"); }
+"||" { printf("Logical OR\n"); }
+"|" { printf("Bitwise OR\n"); }
+"+" { printf("Addition\n"); }
+"-" { printf("Subtraction\n"); }
+"*" { printf("Multiplication\n"); }
+"/" { printf("Division\n"); }
+"%" { printf("Modulus\n"); }
+. { printf("Not an operator\n"); }
+
+%%
+
+int yywrap()
+{
+return 1;
+}
+
+
+int main()
+{
+printf("Enter any operator: ");
+yylex();
+return 0;
+}
