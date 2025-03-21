@@ -1,0 +1,21 @@
+%{
+#include<stdio.h>
+%}
+
+%%
+"//".*    { printf("It is a comment\n"); }
+"/*"([^*]|\*+[^/*])*"*/" { printf("It is a comment\n"); }
+.*         { printf("It is not a comment\n"); }
+%%
+
+int yywrap()
+{
+return 1;
+}
+
+int main()
+{
+printf("Enter Comment: ");
+yylex();
+return 0;
+}
