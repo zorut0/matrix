@@ -1,0 +1,28 @@
+%{
+#include <stdio.h>
+int words = 0, lines = 0, characters = 0;
+%}
+
+%%
+[ \t]+ { words++; } /* Count words by spaces and tabs */
+\n { lines++; words++; } /* Count new lines and words */
+[^ \t\n]+ { characters += yyleng; } /* Count characters */
+%%
+
+int yywrap()
+{
+return 1;
+}
+
+int main() {
+    printf("Enter text (use Ctrl+D to end input):\n");
+    yylex();
+    if (characters > 0) {
+        words++; // At least one word if there are characters
+        lines++; // At least one line if there are characters
+    }
+    printf("Total number of words: %d\n", words);
+    printf("Total number of lines: %d\n", lines);
+    printf("Total number of characters: %d\n", characters);
+    return 0;
+}
