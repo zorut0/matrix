@@ -1,0 +1,62 @@
+%{
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<ctype.h>
+%}
+
+%%
+"main" { printf("%s is keyword\n", yytext); }
+"auto" { printf("%s is keyword\n", yytext); }
+"break" { printf("%s is keyword\n", yytext); }
+"case" { printf("%s is keyword\n", yytext); }
+"char" { printf("%s is keyword\n", yytext); }
+"const" { printf("%s is keyword\n", yytext); }
+"continue" { printf("%s is keyword\n", yytext); }
+"default" { printf("%s is keyword\n", yytext); }
+"do" { printf("%s is keyword\n", yytext); }
+"double" { printf("%s is keyword\n", yytext); }
+"else" { printf("%s is keyword\n", yytext); }
+"enum" { printf("%s is keyword\n", yytext); }
+"extern" { printf("%s is keyword\n", yytext); }
+"float" { printf("%s is keyword\n", yytext); }
+"for" { printf("%s is keyword\n", yytext); }
+"goto" { printf("%s is keyword\n", yytext); }
+"if" { printf("%s is keyword\n", yytext); }
+"int" { printf("%s is keyword\n", yytext); }
+"long" { printf("%s is keyword\n", yytext); }
+"register" { printf("%s is keyword\n", yytext); }
+"return" { printf("%s is keyword\n", yytext); }
+"short" { printf("%s is keyword\n", yytext); }
+"signed" { printf("%s is keyword\n", yytext); }
+"sizeof" { printf("%s is keyword\n", yytext); }
+"static" { printf("%s is keyword\n", yytext); }
+"struct" { printf("%s is keyword\n", yytext); }
+"switch" { printf("%s is keyword\n", yytext); }
+"typedef" { printf("%s is keyword\n", yytext); }
+"unsigned" { printf("%s is keyword\n", yytext); }
+"void" { printf("%s is keyword\n", yytext); }
+"printf" { printf("%s is keyword\n", yytext); }
+"while" { printf("%s is keyword\n", yytext); }
+
+
+[+\-*/%=] { printf("%s is operator\n", yytext); }
+
+[A-Za-z_][A-Za-z0-9_]* { printf("%s is identifier\n", yytext); }
+
+[ \t\n] ; /* Ignore whitespaces */
+
+. { printf("Unrecognized character: %s\n", yytext); }
+
+%%
+
+int yywrap()
+{
+return 1;
+}
+
+int main()
+{
+yylex();
+return 0;
+}
