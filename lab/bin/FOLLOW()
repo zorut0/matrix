@@ -1,0 +1,125 @@
+%{
+#include<stdio.h>
+#include<ctype.h>
+#include<string.h>
+
+void FIRST(char[], char);
+void FOLLOW(char);
+void addToResultSet(char[], char);
+int numOfProductions;
+char productionSet[10][10];
+char followSet[10];
+int followIndex = 0;
+%}
+
+%%
+[A-Z] { printf("%s is a non-terminal\n", yytext); }
+[a-z] { printf("%s is a terminal\n", yytext); }
+"$" { printf("Epsilon\n"); }
+"=" { printf("Production rule\n"); }
+. { printf("Unrecognized character: %s\n", yytext); }
+%%
+
+int yywrap()
+{
+return 1;
+}
+
+void FIRST(char *Result, char c) {
+    int i, j, k;
+    char subResult[20];
+    int foundEpsilon;
+    subResult[0] = '\0';
+    Result[0] = '\0';
+
+    if (!isupper(c)) {
+        addToResultSet(Result, c);
+        return;
+    }
+
+    for (i = 0; i < numOfProductions; i++) {
+        if (productionSet[i][0] == c) {
+            if (productionSet[i][2] == '$') {
+                addToResultSet(Result, '$');
+            } else {
+                j = 2;
+                while (productionSet[i][j] != '\0') {
+                    foundEpsilon = 0;
+                    FIRST(subResult, productionSet[i][j]);
+                    for (k = 0; subResult[k] != '\0'; k++) {
+                        addToResultSet(Result, subResult[k]);
+                    }
+                    if (strchr(subResult, '$') == NULL) break;
+                    j++;
+                }
+            }
+        }
+    }
+}
+
+void FOLLOW(char c) {
+    char firstRes[20];
+    if (productionSet[0][0] == c) {
+        addToResultSet(followSet, '$');
+    }
+    for (int i = 0; i < numOfProductions; i++) {
+        for (int j = 2; productionSet[i][j] != '\0'; j++) {
+            if (productionSet[i][j] == c) {
+                if (productionSet[i][j + 1] != '\0') {
+                    FIRST(firstRes, productionSet[i][j + 1]);
+                    for (int k = 0; firstRes[k] != '\0'; k++) {
+                        if (firstRes[k] != '$') {
+                            addToResultSet(followSet, firstRes[k]);
+                        }
+                    }
+                }
+                if (productionSet[i][j + 1] == '\0' && c != productionSet[i][0]) {
+                    FOLLOW(productionSet[i][0]);
+                }
+            }
+        }
+    }
+}
+
+void addToResultSet(char Result[], char val) {
+    if (strchr(Result, val) == NULL) {
+        Result[followIndex++] = val;
+        Result[followIndex] = '\0';
+    }
+}
+
+int main() {
+    printf("How many number of productions? : ");
+    scanf("%d", &numOfProductions);
+    for (int i = 0; i < numOfProductions; i++) {
+        printf("Enter production Number %d: ", i + 1);
+        scanf("%s", productionSet[i]);
+    }
+    
+    char c, result[20];
+    char choice;
+    do {
+        printf("\nFind the FIRST of: ");
+        scanf(" %c", &c);
+        FIRST(result, c);
+        printf("\nFIRST(%c) = { ", c);
+        for (int i = 0; result[i] != '\0'; i++) {
+            printf(" %c ", result[i]);
+        }
+        printf("}\n");
+        
+        followIndex = 0;
+        printf("Find the FOLLOW of: ");
+        scanf(" %c", &c);
+        FOLLOW(c);
+        printf("\nFOLLOW(%c) = { ", c);
+        for (int i = 0; followSet[i] != '\0'; i++) {
+            printf(" %c ", followSet[i]);
+        }
+        printf("}\n");
+        
+        printf("Press 'y' to continue: ");
+        scanf(" %c", &choice);
+    } while (choice == 'y' || choice == 'Y');
+    return 0;
+}
