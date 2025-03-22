@@ -1,0 +1,76 @@
+%{
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#define SIZE 10
+
+struct symtab {
+    char label[20];
+    int addr;
+} sy[50];
+
+int cnt = 0;
+void insert(char *label, int addr);
+int search(char *label);
+void display();
+void modify(char *label, int newAddr);
+%}
+
+%%
+"a" { printf("SHIFT: a\n"); insert(yytext, cnt++); }
+"b" { printf("SHIFT: b\n"); insert(yytext, cnt++); }
+"+" { printf("SHIFT: +\n"); }
+"/" { printf("SHIFT: /\n"); }
+"*" { printf("SHIFT: *\n"); }
+"E" { printf("REDUCE: E\n"); }
+[a-zA-Z][a-zA-Z0-9]* { printf("ID: %s\n", yytext); insert(yytext, cnt++); }
+"(" { printf("Left Parenthesis\n"); }
+")" { printf("Right Parenthesis\n"); }
+. { printf("Unrecognized character: %s\n", yytext); }
+%%
+
+int yywrap() {
+    return 1;
+}
+
+void insert(char *label, int addr) {
+    if (search(label) == 1) {
+        printf("Duplicate symbol: %s\n", label);
+    } else {
+        strcpy(sy[cnt].label, label);
+        sy[cnt].addr = addr;
+        cnt++;
+    }
+}
+
+int search(char *label) {
+    for (int i = 0; i < cnt; i++) {
+        if (strcmp(sy[i].label, label) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+void modify(char *label, int newAddr) {
+    for (int i = 0; i < cnt; i++) {
+        if (strcmp(sy[i].label, label) == 0) {
+            sy[i].addr = newAddr;
+            printf("Symbol %s updated to address %d\n", label, newAddr);
+            return;
+        }
+    }
+    printf("No such symbol: %s\n", label);
+}
+
+void display() {
+    printf("\nSymbol Table:\n");
+    for (int i = 0; i < cnt; i++) {
+        printf("%s\t%d\n", sy[i].label, sy[i].addr);
+    }
+}
+
+int main() {
+    yylex();
+    display();
+    return 0;
+}
