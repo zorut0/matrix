@@ -1,0 +1,122 @@
+%{
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#define SIZE 10
+
+char stack[50];
+int top = 0;
+char lasthandle[6], handles[][5] = {")E(", "E*E", "E+E", "i", "E^E"};
+char prec[9][9] = {
+    {'>', '>', '<', '<', '<', '<', '<', '>', '>'},
+    {'>', '>', '<', '<', '<', '<', '<', '>', '>'},
+    {'>', '>', '>', '>', '<', '<', '<', '>', '>'},
+    {'>', '>', '>', '>', '<', '<', '<', '>', '>'},
+    {'>', '>', '>', '>', '<', '<', '<', '>', '>'},
+    {'>', '>', '>', '>', '>', 'e', 'e', '>', '>'},
+    {'<', '<', '<', '<', '<', '<', '<', '>', 'e'},
+    {'>', '>', '>', '>', '>', 'e', 'e', '>', '>'},
+    {'<', '<', '<', '<', '<', '<', '<', '<', '>'}
+};
+
+int getindex(char c) {
+    switch (c) {
+        case '+': return 0;
+        case '-': return 1;
+        case '*': return 2;
+        case '/': return 3;
+        case '^': return 4;
+        case 'i': return 5;
+        case '(': return 6;
+        case ')': return 7;
+        case '$': return 8;
+    }
+    return -1;
+}
+
+void shift(char c) {
+    stack[++top] = c;
+    stack[top + 1] = '\0';
+}
+
+int reduce() {
+    int i, len, found, t;
+    for (i = 0; i < 5; i++) {
+        len = strlen(handles[i]);
+        if (stack[top] == handles[i][0] && top + 1 >= len) {
+            found = 1;
+            for (t = 0; t < len; t++) {
+                if (stack[top - t] != handles[i][t]) {
+                    found = 0;
+                    break;
+                }
+            }
+            if (found) {
+                stack[top - t + 1] = 'E';
+                top = top - t + 1;
+                strcpy(lasthandle, handles[i]);
+                stack[top + 1] = '\0';
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void display_stack() {
+    for (int j = 0; j <= top; j++)
+        printf("%c", stack[j]);
+}
+
+void display_input(char *input, int i) {
+    for (int j = i; j < strlen(input); j++)
+        printf("%c", input[j]);
+}
+%}
+
+%%
+[a-zA-Z][a-zA-Z0-9]* { shift(yytext[0]); printf("SHIFT: %s\n", yytext); }
+[\+\-\*/\^] { shift(yytext[0]); printf("SHIFT: %s\n", yytext); }
+"(" { shift(yytext[0]); printf("SHIFT: %s\n", yytext); }
+")" { shift(yytext[0]); printf("SHIFT: %s\n", yytext); }
+"$" { shift(yytext[0]); printf("SHIFT: %s\n", yytext); }
+
+%%
+
+int yywrap() {
+    return 1;
+}
+
+int main() {
+    char input[50];
+    printf("\nEnter the string: ");
+    scanf("%s", input);
+    strcat(input, "$");
+    strcpy(stack, "$");
+
+    printf("\nSTACK\tINPUT\tACTION");
+    int i = 0;
+    while (i < strlen(input)) {
+        shift(input[i++]);
+        printf("\n");
+        display_stack();
+        printf("\t");
+        display_input(input, i);
+        printf("\tShift");
+
+        while (prec[getindex(stack[top])][getindex(input[i])] == '>' && reduce()) {
+            printf("\n");
+            display_stack();
+            printf("\t");
+            display_input(input, i);
+            printf("\tReduced: E->%s", lasthandle);
+        }
+    }
+
+    if (strcmp(stack, "$E$") == 0)
+        printf("\nAccepted\n");
+    else
+        printf("\nNot Accepted\n");
+    
+    return 0;
+}
