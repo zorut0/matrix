@@ -1,0 +1,30 @@
+%{
+#include <stdio.h>
+#include <string.h>
+
+int reg_count = 0; // Register counter
+%}
+
+%%
+
+
+[ \t]+         {}  // Ignore spaces and tabs
+"="            { printf("\n mov %s, R%d", yytext, reg_count); }
+"+"            { printf("\n add %s, R%d", yytext, reg_count); }
+"-"            { printf("\n sub %s, R%d", yytext, reg_count); }
+"*"            { printf("\n mul %s, R%d", yytext, reg_count); }
+"/"            { printf("\n div %s, R%d", yytext, reg_count); }
+[a-zA-Z0-9]+   { printf(" %s", yytext); }  // Process variables and values
+";"            { printf("\n mov R%d, %s\n", reg_count, yytext); reg_count++; }
+
+%%
+
+int yywrap() {
+    return 1;
+}
+
+int main() {
+    printf("Enter the three-address code (End with Ctrl+D):\n");
+    yylex(); // Start lexical analysis
+    return 0;
+}
