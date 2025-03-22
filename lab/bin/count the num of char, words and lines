@@ -1,0 +1,36 @@
+%{
+#include <stdio.h>
+
+int words = 0, lines = 0, characters = 0;
+%}
+
+%%
+
+[^\n\t\r ~]+ { words++; characters += yyleng; }  // Count words and characters
+\n           { lines++; characters++; }         // Count new lines
+" "          { characters++; }                  // Count spaces as characters
+.            { characters++; }                  // Count any other character
+
+%%
+
+int yywrap() 
+{
+    return 1;
+}
+
+
+int main() {
+    printf("Enter text (end with '~'):\n");
+    yylex(); // Start lexical analysis
+
+    if (characters > 0) {  // Corner case handling
+        words++;
+        lines++;
+    }
+
+    printf("\nTotal number of words: %d\n", words);
+    printf("Total number of lines: %d\n", lines);
+    printf("Total number of characters: %d\n", characters);
+    
+    return 0;
+}
