@@ -1,0 +1,17 @@
+data <- c(10, 20, 30, 40, 50)
+
+data_min <- min(data)
+data_max <- max(data)
+data_mean <- mean(data)
+
+min_max_normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+normalized_data <- min_max_normalize(data)
+
+print(paste("Min:", data_min))
+print(paste("Max:", data_max))
+print(paste("Mean:", data_mean))
+print("Min-Max Normalized Data:")
+print(normalized_data)
