@@ -1,0 +1,10 @@
+data <- data.frame(
+  A = c(10, 20, 30, 40, 50),
+  B = c(5, 15, 25, 35, 45),
+  C = c(2, 8, 18, 32, 50)
+)
+
+correlation_matrix <- cor(data)
+
+print("Correlation Matrix:")
+print(correlation_matrix)
