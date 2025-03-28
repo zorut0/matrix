@@ -1,6 +1,10 @@
-names<-c("siri","mahi","chiru")
-age<-c(23,24,25)
-marks<-c(88,78,25)
-df<-data.frame(names,age,marks)
-mid range(df $age)
-write.csv(df,"datafr.csv")
+names <- c("siri", "mahi", "chiru")
+age <- c(23, 24, 25)
+marks <- c(88, 78, 25)
+
+df <- data.frame(names, age, marks)
+
+mid_range_age <- (max(df$age) + min(df$age)) / 2
+print(mid_range_age)
+
+write.csv(df, "datafr.csv", row.names = FALSE)
